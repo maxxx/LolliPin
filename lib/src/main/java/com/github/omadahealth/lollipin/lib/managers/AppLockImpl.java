@@ -97,6 +97,8 @@ public class AppLockImpl<T extends AppLockActivity> extends AppLock implements L
      */
     private static AppLockImpl mInstance;
 
+    private boolean pincodeRequirementForced = false;
+
     /**
      * Static method that allows to get back the current static Instance of {@link AppLockImpl}
      *
@@ -263,6 +265,11 @@ public class AppLockImpl<T extends AppLockActivity> extends AppLock implements L
     }
 
     @Override
+    public void setPincodeRequiredForced(boolean isForced) {
+        pincodeRequirementForced = isForced;
+    }
+
+    @Override
     public boolean checkPasscode(String passcode) {
         Algorithm algorithm = Algorithm.getFromText(mSharedPreferences.getString(PASSWORD_ALGORITHM_PREFERENCE_KEY, ""));
 
@@ -343,6 +350,12 @@ public class AppLockImpl<T extends AppLockActivity> extends AppLock implements L
             return true;
         }
 
+        // no pass code set
+        if (!isPasscodeSet()) {
+            Log.d(TAG, "lock passcode not set.");
+            return false;
+        }
+
         // already unlock
         if (activity instanceof AppLockActivity) {
             AppLockActivity ala = (AppLockActivity) activity;
@@ -352,10 +365,10 @@ public class AppLockImpl<T extends AppLockActivity> extends AppLock implements L
             }
         }
 
-        // no pass code set
-        if (!isPasscodeSet()) {
-            Log.d(TAG, "lock passcode not set.");
-            return false;
+        if (pincodeRequirementForced) {
+            Log.d(TAG, "pin code forced - show lock");
+            pincodeRequirementForced = false;
+            return true;
         }
 
         // no enough timeout

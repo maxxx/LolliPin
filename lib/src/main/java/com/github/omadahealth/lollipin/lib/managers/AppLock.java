@@ -157,6 +157,11 @@ public abstract class AppLock {
     public abstract void setLastActiveMillis();
 
     /**
+     * Set the last active time to be over timeout, therefore pin code will be required at next check
+     */
+    public abstract void setPincodeRequiredForced(boolean isForced);
+
+    /**
      * Set the passcode (store his SHA1 into {@link android.content.SharedPreferences}) using the
      * {@link com.github.omadahealth.lollipin.lib.encryption.Encryptor} class.
      */
